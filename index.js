@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const http = require('http');
 
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 
