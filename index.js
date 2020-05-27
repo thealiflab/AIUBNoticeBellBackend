@@ -8,6 +8,7 @@ const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNotice;
 
+http.createServer(onRequest).listen(process.env.PORT || 6000);
 
 //puppeteer
 async function configureBrowser(){
@@ -35,8 +36,8 @@ async function configureBrowser(){
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth:{
-                    user: process.env.EMAIL,
-                    pass: process.env.PASS
+                    user: 'donationdistributation@gmail.com',
+                    pass: 'donar@123'
                 }
             });
 
