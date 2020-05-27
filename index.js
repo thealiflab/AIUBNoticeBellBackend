@@ -8,6 +8,7 @@ const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNotice;
 
+
 //puppeteer
 async function configureBrowser(){
     try{
