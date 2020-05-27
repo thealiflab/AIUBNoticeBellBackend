@@ -9,11 +9,14 @@ var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNotice;
 
 //puppeteer
-
 async function configureBrowser(){
     try{
         const browser = await puppeteer.launch({
-            headless: true
+            headless: true,
+            'args' : [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+              ]
         });
         const page = await browser.newPage();
         await page.goto(aiubNoticeURL);
