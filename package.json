@@ -1,0 +1,25 @@
+{
+  "name": "aiubnoticesend",
+  "version": "1.0.0",
+  "description": "aiub website web-scrapping",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thealiflab/AIUBNoticeSend.git"
+  },
+  "author": "Alif",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thealiflab/AIUBNoticeSend/issues"
+  },
+  "homepage": "https://github.com/thealiflab/AIUBNoticeSend#readme",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "dotenv": "^8.2.0",
+    "nodemailer": "^6.4.6",
+    "puppeteer": "^3.1.0"
+  }
+}
