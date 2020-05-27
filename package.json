@@ -4,7 +4,8 @@
   "description": "It can send notice & scrap data",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "postinstall": "npm run build",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "Alif",
