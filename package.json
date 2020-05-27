@@ -12,7 +12,6 @@
   "dependencies": {
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
-    "http": "0.0.1-security",
     "nodemailer": "^6.4.6",
     "puppeteer": "^3.1.0"
   },
