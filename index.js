@@ -12,14 +12,7 @@ var dateObj, cday, cmonth, cyear; //for current date
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var countCronjobHour = -1;
 
-// var port = process.env.PORT || 5000;
-
-var server_port = process.env.PORT || 80;
-var server_host = '0.0.0.0';
-server.listen(server_port, server_host, function() {
-    console.log('Listening on port: ' + server_port);
-});
-
+$PORT = process.env.PORT || 5000;
 
 //puppeteer
 async function configureBrowser(){
