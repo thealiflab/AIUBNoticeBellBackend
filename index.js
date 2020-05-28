@@ -14,7 +14,6 @@ var countCronjobHour = -1;
 
 $PORT = process.env.PORT || 5000;
 
-
 //puppeteer
 async function configureBrowser(){
     try{
