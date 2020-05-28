@@ -7,7 +7,9 @@ require('dotenv').config();
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 
 var noticeTitle, noticeDesc, postURL, day, month, year;
-var lastNotice;
+var lastNoticeTitle;
+var dateObj, cday, cmonth, cyear; //for current date
+const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 //puppeteer
 async function configureBrowser(){
@@ -30,6 +32,16 @@ async function configureBrowser(){
             year = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > time > span.year", element => element.innerHTML);
             postURL = await page.$$eval('#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > a', e=>e.map((a)=>a.href))
 
+            
+            //Current Date Calculate
+            var dateObj = new Date();
+            var cday = dateObj.getUTCDate();
+            var cmonth = dateObj.getUTCMonth(); //months from 1-12
+            var cyear = dateObj.getUTCFullYear();
+
+            // console.log(cday);
+            // console.log(monthArray[cmonth]);
+            // console.log(cyear);
 
             //nodemailer
             var transporter = nodemailer.createTransport(smtpTransport({
@@ -62,18 +74,19 @@ async function configureBrowser(){
                 });
             }
             
+
     
             //checking todays date instead of "22"
 
-            if(day == "22" && lastNotice != noticeTitle){
+            if(day == cday.toString() && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
 
                 console.log(`${day} ${month},${year}`);
                 console.log(noticeTitle);
                 console.log(noticeDesc);
                 console.log("See full post: "+postURL);
 
-                sendMailFinal();
-                lastNotice = noticeTitle;
+                // sendMailFinal();
+                lastNoticeTitle = noticeTitle;
             }
             else{
                 console.log('No further Notice Today');
