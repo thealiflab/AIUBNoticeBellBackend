@@ -10,6 +10,7 @@ var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNoticeTitle;
 var dateObj, cday, cmonth, cyear; //for current date
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var countCronjobHour = -1;
 
 //puppeteer
 async function configureBrowser(){
@@ -39,9 +40,6 @@ async function configureBrowser(){
             var cmonth = dateObj.getUTCMonth(); //months from 1-12
             var cyear = dateObj.getUTCFullYear();
 
-            // console.log(cday);
-            // console.log(monthArray[cmonth]);
-            // console.log(cyear);
 
             //nodemailer
             var transporter = nodemailer.createTransport(smtpTransport({
@@ -76,8 +74,7 @@ async function configureBrowser(){
             
 
     
-            //checking todays date instead of "22"
-
+            //checking todays date instead of "22 May, 2020"
             if(day == cday.toString() && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
 
                 console.log(`${day} ${month},${year}`);
@@ -85,7 +82,7 @@ async function configureBrowser(){
                 console.log(noticeDesc);
                 console.log("See full post: "+postURL);
 
-                // sendMailFinal();
+                sendMailFinal();
                 lastNoticeTitle = noticeTitle;
             }
             else{
@@ -99,14 +96,14 @@ async function configureBrowser(){
     }
 }
 
-// configureBrowser();
-
 // cronjob will execute every 1 hour with this: 0 * * * *
 async function tracking(){
     try{
         let track = new CronJob('0 * * * *', function(){
             configureBrowser();
             console.log('Cronjob is running....');
+            countCronjobHour++;
+            console.log('Total Hour Monitored: '+countCronjobHour);
         }, null, true, null, null, true);
         track.start();
     }
