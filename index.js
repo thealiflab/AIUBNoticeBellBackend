@@ -12,6 +12,9 @@ var dateObj, cday, cmonth, cyear; //for current date
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var countCronjobHour = -1;
 
+
+var port = process.env.PORT || 5000;
+
 //puppeteer
 async function configureBrowser(){
     try{
@@ -115,5 +118,3 @@ async function tracking(){
 
 // //start tracking
 tracking();
-
-
