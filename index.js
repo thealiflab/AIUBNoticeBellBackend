@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport');
 require('dotenv').config();
 
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
@@ -31,19 +32,22 @@ async function configureBrowser(){
 
 
             //nodemailer
-            var transporter = nodemailer.createTransport({
+            var transporter = nodemailer.createTransport(smtpTransport({
                 service: 'gmail',
-                auth:{
-                    user: 'donationdistributation@gmail.com',
-                    pass: 'donar@123'
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, 
+                auth: {
+                  user: 'imhero48@gmail.com',
+                  pass: 'asdf_54321A'
                 }
-            });
+              }));
 
             var mailOptions = {
-                from: 'AIUB Notice Bell <donationdistributation@gmail.com>',
+                from: 'AIUB Notice Bell <imhero48@gmail.com>',
                 to: 'geekalif@gmail.com',
                 subject: 'New Notice',
-                text: `${noticeTitle}\n\n${noticeDesc}\n\n${day} ${month},${year}\n\nSee full notice: ${postURL}`
+                text: `${noticeTitle}\n\n${noticeDesc}\n\nDate: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
 
             };
 
