@@ -44,7 +44,7 @@ async function configureBrowser(){
             cyear = dateObj.getUTCFullYear();
             function watchTime(){
                 timeObj = new Date();
-                chour = timeObj.getHours();
+                chour = timeObj.getHours() + 6;  //+6 added for Heroku server to respond in UTC Asia/Dhaka
                 cminute = timeObj.getUTCMinutes();
                 ampm = "AM";
             
