@@ -15,7 +15,7 @@ var countCronjobHour = -1;
 
 $PORT = process.env.PORT || 5000;
 
-//pupp
+//pup
 async function configureBrowser(){
     try{
         const browser = await puppeteer.launch({
@@ -40,29 +40,11 @@ async function configureBrowser(){
             //Current Date Calculate
             dateObj = new Date();
             cday = dateObj.getUTCDate();
-            cmonth = dateObj.getUTCMonth();
+            cmonth = dateObj.getUTCMonth(); //months from 1-12
             cyear = dateObj.getUTCFullYear();
-            function watchTime(){
-                timeObj = new Date();
-                chour = timeObj.getHours();
-                cminute = timeObj.getUTCMinutes();
-                ampm = "am";
-            
-                if (cminute < 10){
-                    cminute = "0" + cminute;
-                }
-            
-                if(chour > 12){
-                    chour -= 12;
-                    ampm = "pm";
-                }
-            
-                console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
-            }
 
 
             //nodemailer
-            //before pushing, set pass as password
             var transporter = nodemailer.createTransport(smtpTransport({
                 service: 'gmail',
                 host: 'smtp.gmail.com',
@@ -92,24 +74,23 @@ async function configureBrowser(){
                     }
                 });
             }
+            
+
     
             //checking todays date instead of "22 May, 2020"
-            if(day == cday.toString()  && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
+            if(day == cday.toString() && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
 
-                lastNoticeTitle = noticeTitle;
-
+                console.log("Console Output: ")
                 console.log(`${day} ${month},${year}`);
                 console.log(noticeTitle);
                 console.log(noticeDesc);
                 console.log("See full post: "+postURL);
-                watchTime();
 
-                //Sending Mail Here
                 sendMailFinal();
+                lastNoticeTitle = noticeTitle;
             }
             else{
                 console.log('No further Notice Today');
-                watchTime();
             }
             browser.close();
         });
@@ -119,9 +100,26 @@ async function configureBrowser(){
     }
 }
 
+function watchTime(){
+    timeObj = new Date();
+    chour = timeObj.getHours();
+    cminute = timeObj.getUTCMinutes();
+    ampm = "am";
 
-// main application starts from here
+    if (cminute < 10){
+        cminute = "0" + cminute;
+    }
+
+    if(chour > 12){
+        chour -= 12;
+        ampm = "pm";
+    }
+
+    console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
+}
+
 // cronjob will execute every 1 hour with this: 0 * * * *
+// main application starts from here
 async function tracking(){
     try{
         let track = new CronJob('0 * * * *', function(){
@@ -129,6 +127,7 @@ async function tracking(){
             console.log('App monitor is running....');
             countCronjobHour++;
             console.log('Total Hour Monitored: '+countCronjobHour);
+            watchTime();
         }, null, true, null, null, true);
         track.start();
     }
