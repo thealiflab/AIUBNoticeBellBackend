@@ -46,7 +46,7 @@ async function configureBrowser(){
                 timeObj = new Date();
                 chour = timeObj.getHours();
                 cminute = timeObj.getUTCMinutes();
-                ampm = "am";
+                ampm = "AM";
             
                 if (cminute < 10){
                     cminute = "0" + cminute;
@@ -54,7 +54,7 @@ async function configureBrowser(){
             
                 if(chour > 12){
                     chour -= 12;
-                    ampm = "pm";
+                    ampm = "PM";
                 }
             
                 console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
