@@ -9,13 +9,19 @@ const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNoticeTitle;
 var dateObj, cday, cmonth, cyear; //for current date
-var timeObj, chour, cminute, ampm; //for watch time
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var countCronjobHour = -1;
 
-$PORT = process.env.PORT || 5000;
+// var port = process.env.PORT || 5000;
 
-//pup
+var server_port = process.env.PORT || 80;
+var server_host = '0.0.0.0';
+server.listen(server_port, server_host, function() {
+    console.log('Listening on port: ' + server_port);
+});
+
+
+//puppeteer
 async function configureBrowser(){
     try{
         const browser = await puppeteer.launch({
@@ -38,10 +44,10 @@ async function configureBrowser(){
 
             
             //Current Date Calculate
-            dateObj = new Date();
-            cday = dateObj.getUTCDate();
-            cmonth = dateObj.getUTCMonth(); //months from 1-12
-            cyear = dateObj.getUTCFullYear();
+            var dateObj = new Date();
+            var cday = dateObj.getUTCDate();
+            var cmonth = dateObj.getUTCMonth(); //months from 1-12
+            var cyear = dateObj.getUTCFullYear();
 
 
             //nodemailer
@@ -80,7 +86,6 @@ async function configureBrowser(){
             //checking todays date instead of "22 May, 2020"
             if(day == cday.toString() && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
 
-                console.log("Console Output: ")
                 console.log(`${day} ${month},${year}`);
                 console.log(noticeTitle);
                 console.log(noticeDesc);
@@ -100,34 +105,14 @@ async function configureBrowser(){
     }
 }
 
-function watchTime(){
-    timeObj = new Date();
-    chour = timeObj.getHours();
-    cminute = timeObj.getUTCMinutes();
-    ampm = "am";
-
-    if (cminute < 10){
-        cminute = "0" + cminute;
-    }
-
-    if(chour > 12){
-        chour -= 12;
-        ampm = "pm";
-    }
-
-    console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
-}
-
 // cronjob will execute every 1 hour with this: 0 * * * *
-// main application starts from here
 async function tracking(){
     try{
         let track = new CronJob('0 * * * *', function(){
             configureBrowser();
-            console.log('App monitor is running....');
+            console.log('Cronjob is running....');
             countCronjobHour++;
             console.log('Total Hour Monitored: '+countCronjobHour);
-            watchTime();
         }, null, true, null, null, true);
         track.start();
     }
