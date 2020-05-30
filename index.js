@@ -79,7 +79,7 @@ async function configureBrowser(){
                 to: 'geekalif@gmail.com',
                 subject: 'New Notice',
                 text: `${noticeTitle}\n\n${noticeDesc}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
-
+                //attachment
             };
 
             sendMailFinal = function(){
