@@ -1,2 +1,2 @@
-# AIUB Notice Send Web App
+# ANS Web App
 
