@@ -8,6 +8,7 @@ const aiubNoticeURL = 'https://www.aiub.edu/';
 
 var noticeTitle, postURL, day, month, year;
 var lastNoticeTitle;
+var dateObj, cmonth, cyear;
 var timeObj, chour, cminute, ampm; //for watch time
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var countCronjobHour = -1;
@@ -27,7 +28,10 @@ async function configureBrowser(){
         const page = await browser.newPage();
         await page.goto(aiubNoticeURL);
 
-        //Current Time Calculation
+        //Time Calculation
+        dateObj = new Date();
+        cmonth = dateObj.getUTCMonth();
+        cyear = dateObj.getUTCFullYear();
         function watchTime(){
             timeObj = new Date();
             chour = timeObj.getHours() + 6;  //+6 added for Heroku server to respond in UTC Asia/Dhaka
