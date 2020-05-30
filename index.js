@@ -98,7 +98,7 @@ async function configureBrowser(){
                 watchTime();
 
                 //Sending Mail Here
-                //sendMailFinal();
+                sendMailFinal();
             }
             else{
                 console.log('No further Notice Today');
