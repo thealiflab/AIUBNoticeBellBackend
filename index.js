@@ -76,8 +76,15 @@ async function configureBrowser(){
                 from: 'AIUB Notice Bell <imhero48@gmail.com>',
                 to: 'geekalif@gmail.com',
                 subject: 'New Notice',
-                text: `${noticeTitle}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
-                // attachment:
+                text: `${noticeTitle}`,
+                html: `<b>${noticeTitle}</b><br><br>Notice Date: ${day} ${month},${year}<br><br>See full notice: ${postURL}<br><br><img src="cid:ahmedalif.com"/>`,
+                attachments: [
+                    {
+                        filename: 'logo.png',
+                        path: './assets/logo.png',
+                        cid: 'ahmedalif.com'
+                    }
+                ],
             };
 
             sendMailFinal = function(){
@@ -135,5 +142,5 @@ async function tracking(){
     
 }
 
-// //start tracking
+//start tracking
 tracking();
