@@ -78,7 +78,7 @@ async function configureBrowser(){
                 from: 'AIUB Notice Bell <imhero48@gmail.com>',
                 to: 'geekalif@gmail.com',
                 subject: 'New Notice',
-                text: `${noticeTitle}\n\n${noticeDesc}\n\nDate: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
+                text: `${noticeTitle}\n\n${noticeDesc}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
 
             };
 
