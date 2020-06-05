@@ -3,6 +3,9 @@ const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 require('dotenv').config();
+const sendgrid = require('@sendgrid/mail');
+sendgrid.setApiKey(process.env.APIKEY);
+
 
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 
@@ -60,41 +63,51 @@ async function configureBrowser(){
                 console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
             }
 
+            //sendgrid
+            const msg = {
+                from: 'AIUB sNotice Send <nerdwheel@gmail.com>',
+                to: 'geekalif@gmail.com',
+                subject: 'New sNotice',
+                text: `${noticeTitle}\n\n${noticeDesc}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`,
+                html: '<strong>Mail from using sendgrid</strong>'
+            }
+
 
             //nodemailer
             //before pushing, set pass as password
-            var transporter = nodemailer.createTransport(smtpTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, 
-                auth: {
-                  user: 'imhero48@gmail.com',
-                  pass: 'asdf_54321A'
-                }
-              }));
+            // var transporter = nodemailer.createTransport(smtpTransport({
+            //     service: 'gmail',
+            //     host: 'smtp.gmail.com',
+            //     port: 465,
+            //     secure: true, 
+            //     auth: {
+            //       user: 'imhero48@gmail.com',
+            //       pass: 'asdf_54321A'
+            //     }
+            //   }));
 
-            var mailOptions = {
-                from: 'AIUB Notice Bell <imhero48@gmail.com>',
-                to: 'geekalif@gmail.com',
-                subject: 'New Notice',
-                text: `${noticeTitle}\n\n${noticeDesc}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
-                //attachment
-            };
+            // var mailOptions = {
+            //     from: 'AIUB Notice Bell <imhero48@gmail.com>',
+            //     to: 'geekalif@gmail.com',
+            //     subject: 'New Notice',
+            //     text: `${noticeTitle}\n\n${noticeDesc}\n\nNotice Date: ${day} ${month},${year}\n\nSee full notice: ${postURL}`
+            //     //attachment
+            // };
 
-            sendMailFinal = function(){
-                transporter.sendMail(mailOptions,function(err,data){
-                    if(err){
-                        console.log("Send Faild. reason: "+err);
-                    }
-                    else{
-                        console.log("Mail send successfully");
-                    }
-                });
-            }
+            // sendMailFinal = function(){
+            //     transporter.sendMail(mailOptions,function(err,data){
+            //         if(err){
+            //             console.log("Send Faild. reason: "+err);
+            //         }
+            //         else{
+            //             console.log("Mail send successfully");
+            //         }
+            //     });
+            // }
     
             //checking todays date instead of "22 May, 2020"
-            if(day == cday.toString()  && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
+            //if(day == cday.toString()  && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle)
+            if(true){
 
                 lastNoticeTitle = noticeTitle;
 
@@ -105,7 +118,15 @@ async function configureBrowser(){
                 watchTime();
 
                 //Sending Mail Here
-                sendMailFinal();
+                //sendMailFinal();
+                sendgrid.send(msg, (err) => {
+                    if(err){
+                        console.log("Error occured when sending mail which is: "+err);
+                    }
+                    else{
+                        console.log("Mail sent successfully");
+                    }
+                });
             }
             else{
                 console.log('No further Notice Today');
