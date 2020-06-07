@@ -94,7 +94,7 @@ async function configureBrowser(){
             }
     
             //checking todays date instead of "22 May, 2020"
-            if(day == cday.toString()  && month == monthArray[cmonth] && year == cyear.toString() && lastNoticeTitle != noticeTitle){
+            if(lastNoticeTitle != noticeTitle){
 
                 lastNoticeTitle = noticeTitle;
 
