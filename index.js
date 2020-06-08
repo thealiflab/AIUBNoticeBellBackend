@@ -3,6 +3,25 @@ const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 require('dotenv').config();
+const {Pool} = require('pg');
+
+const connectURI = "postgres://xnyhqsdgfkgbbi:82b53469e34e73b89dd7a77bd035cd54c41ee10f9e958e86145f51f500c94b2e@ec2-54-247-79-178.eu-west-1.compute.amazonaws.com:5432/d3rf1g2ceonf2s";
+
+const pool = new Pool({
+    connectionString: connectURI,
+    ssl: { rejectUnauthorized: false }
+});
+
+pool.connect((err, client, done) => {
+    if(err){
+        console.log("Postgres error which is: "+err);
+    }
+    else{
+        console.log("Postgres Connection successfull...");
+        done();
+    }
+});
+
 
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 
@@ -105,7 +124,7 @@ async function configureBrowser(){
                 watchTime();
 
                 //Sending Mail Here
-                sendMailFinal();
+                //sendMailFinal();
             }
             else{
                 console.log('No further Notice Today');
