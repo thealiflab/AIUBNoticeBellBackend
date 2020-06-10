@@ -22,7 +22,6 @@ pool.connect((err, client, done) => {
     }
 });
 
-
 //table created on 10 June, 2020
 // pool.query('CREATE TABLE aiubnotice (noticetitle VARCHAR (2000) NOT NULL);',(err,res) => {
 //     if(err){
@@ -32,7 +31,6 @@ pool.connect((err, client, done) => {
 //         console.log('Table creation successful.');
 //     }
 // });
-
 
 const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
 
@@ -195,6 +193,7 @@ async function configureBrowser(){
                 }
             });
 
+            
             //Have to initialize first when we start the app for the first time
             // pool.query("INSERT INTO aiubnotice (noticetitle) VALUES ('"+noticeTitle+"');",(err,res) => {
             //     if(err){
