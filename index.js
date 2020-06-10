@@ -3,12 +3,42 @@ const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 require('dotenv').config();
+const {Pool} = require('pg');
 
-const aiubNoticeURL = 'https://www.aiub.edu/';
+const connectURI = "postgres://xnyhqsdgfkgbbi:82b53469e34e73b89dd7a77bd035cd54c41ee10f9e958e86145f51f500c94b2e@ec2-54-247-79-178.eu-west-1.compute.amazonaws.com:5432/d3rf1g2ceonf2s";
 
-var noticeTitle, postURL, day, month, year;
+const pool = new Pool({
+    connectionString: connectURI,
+    ssl: { rejectUnauthorized: false }
+});
+
+pool.connect((err, client, done) => {
+    if(err){
+        console.log("Postgres error which is: "+err);
+    }
+    else{
+        console.log("Postgres Connection successfull...");
+        done();
+    }
+});
+
+
+//table created on 10 June, 2020
+// pool.query('CREATE TABLE aiubnotice (noticetitle VARCHAR (2000) NOT NULL);',(err,res) => {
+//     if(err){
+//         console.log("Table creation error which is: "+err);
+//     }
+//     else{
+//         console.log('Table creation successful.');
+//     }
+// });
+
+
+const aiubNoticeURL = 'https://www.aiub.edu/category/notices';
+
+var noticeTitle, noticeDesc, postURL, day, month, year;
 var lastNoticeTitle;
-var dateObj, cmonth, cyear;
+var dateObj, cday, cmonth, cyear; //for current date
 var timeObj, chour, cminute, ampm; //for watch time
 const monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var countCronjobHour = -1;
@@ -27,38 +57,40 @@ async function configureBrowser(){
         });
         const page = await browser.newPage();
         await page.goto(aiubNoticeURL);
-
-        //Time Calculation
-        dateObj = new Date();
-        cmonth = dateObj.getUTCMonth();
-        cyear = dateObj.getUTCFullYear();
-        function watchTime(){
-            timeObj = new Date();
-            chour = timeObj.getHours() + 6;  //+6 added for Heroku server to respond in UTC Asia/Dhaka
-            cminute = timeObj.getUTCMinutes();
-            ampm = "AM";
-        
-            if (cminute < 10){
-                cminute = "0" + cminute;
-            }
-        
-            if(chour > 12){
-                chour -= 12;
-                ampm = "PM";
-            }
-        
-            console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
-        }
     
-        page.waitForSelector("#notice > div:nth-child(1)").then(async function(){
-            noticeTitle = await page.$eval("#notice > div:nth-child(1) > a", element => element.innerHTML);
-            day = await page.$eval("#notice > div:nth-child(1) > div > span", element => element.innerHTML);
-            month = monthArray[cmonth];
-            year = cyear.toString();
-            postURL = await page.$$eval('#notice > div:nth-child(1) > a', e=>e.map((a)=>a.href))
+        page.waitForSelector("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1)").then(async function(){
+            noticeTitle = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > div.info > h2", element => element.innerHTML);
+            noticeDesc = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > div.info > p", element => element.innerHTML);
+            day = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > time > span.day", element => element.innerHTML);
+            month = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > time > span.month", element => element.innerHTML);
+            year = await page.$eval("#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > time > span.year", element => element.innerHTML);
+            postURL = await page.$$eval('#frame > div > div.row > div.col-xs-12.col-sm-12.col-md-9.pull-right > ul > li:nth-child(1) > a', e=>e.map((a)=>a.href))
 
             
+            //Current Date Calculate
+            dateObj = new Date();
+            cday = dateObj.getUTCDate();
+            cmonth = dateObj.getUTCMonth();
+            cyear = dateObj.getUTCFullYear();
+
+            function watchTime(){
+                timeObj = new Date();
+                chour = timeObj.getHours() + 6;  //+6 added for Heroku server to respond in UTC Asia/Dhaka
+                cminute = timeObj.getUTCMinutes();
+                ampm = "AM";
             
+                if (cminute < 10){
+                    cminute = "0" + cminute;
+                }
+            
+                if(chour > 12){
+                    chour -= 12;
+                    ampm = "PM";
+                }
+            
+                console.log(`Current Time: ${chour}:${cminute} ${ampm}`);
+            }
+
             //nodemailer
             //before pushing, set pass as password
             var transporter = nodemailer.createTransport(smtpTransport({
@@ -97,24 +129,83 @@ async function configureBrowser(){
                     }
                 });
             }
+
+            //clear database's data
+            function noticeClear(){
+                pool.query("UPDATE aiubnotice SET noticetitle=null;",(err,res) => {
+                    if(err){
+                        console.log("Table clear error which is: "+err);
+                    }
+                    else{
+                        console.log("Table cleared successfully");
+                    }
+                });
+            }
+            
+            //insertion data to database
+            function noticeInsertion(){
+                pool.query("INSERT INTO aiubnotice (noticetitle) VALUES ('"+noticeTitle+"');",(err,res) => {
+                    if(err){
+                        console.log("Table insertion error which is: "+err);
+                    }
+                    else{
+                        console.log('Table insertion successful.');
+                        console.log('Your inserted notice title is: '+noticeTitle);
+                    }
+                });
+            }
+ 
+            function centralProcessing(lastNoticeTitle){
+                var lnt = lastNoticeTitle;
+
+                if(lnt != noticeTitle){
+
+                    console.log(`${day} ${month},${year}`);
+                    console.log(noticeTitle);
+                    console.log(noticeDesc);
+                    console.log("See full post: "+postURL);
+                    watchTime();
+
+                    noticeClear();
+                    
+                    noticeInsertion();
+
+                    //Sending Mail Here
+                    sendMailFinal();
+                }
+                else{
+                    console.log('No further Notice Today');
+                    watchTime();
+                }
+            }
+
+            //see data from database save
+            pool.query("SELECT noticetitle FROM aiubnotice",(err,res) => {
+                if(err){
+                    console.log("Table selecting error which is: "+err);
+                }
+                else{
+                    console.log('Table selecting successfully.');
+
+                    lastNoticeTitle = Object.values(res.rows[0]).toString();
+
+                    console.log('got notice data from database : '+lastNoticeTitle);
+                    
+                    centralProcessing(lastNoticeTitle);              
+                }
+            });
+
+            //Have to initialize first when we start the app for the first time
+            // pool.query("INSERT INTO aiubnotice (noticetitle) VALUES ('"+noticeTitle+"');",(err,res) => {
+            //     if(err){
+            //         console.log("Table insertion error which is: "+err);
+            //     }
+            //     else{
+            //         console.log('Table insertion successful.');
+            //         console.log('Your inserted notice title is: '+noticeTitle);
+            //     }
+            // });
     
-            //checking todays date instead of "22 May, 2020"
-            if(lastNoticeTitle != noticeTitle){
-
-                lastNoticeTitle = noticeTitle;
-
-                console.log(`${day} ${month},${year}`);
-                console.log(noticeTitle);
-                console.log("See full post: "+postURL);
-                watchTime();
-
-                //Sending Mail Here
-                sendMailFinal();
-            }
-            else{
-                console.log('No further Notice Today');
-                watchTime();
-            }
             browser.close();
         });
     }
@@ -125,12 +216,13 @@ async function configureBrowser(){
 
 
 // main application starts from here
+// cronjob will execute every 1 minute with this: * * * * *
 // cronjob will execute every 1 hour with this: 0 * * * *
 async function tracking(){
     try{
         let track = new CronJob('0 * * * *', function(){
-            configureBrowser();
             console.log('App monitor is running....');
+            configureBrowser();
             countCronjobHour++;
             console.log('Total Hour Monitored: '+countCronjobHour);
         }, null, true, null, null, true);
