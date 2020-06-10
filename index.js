@@ -193,7 +193,6 @@ async function configureBrowser(){
                 }
             });
 
-            
             //Have to initialize first when we start the app for the first time
             // pool.query("INSERT INTO aiubnotice (noticetitle) VALUES ('"+noticeTitle+"');",(err,res) => {
             //     if(err){
