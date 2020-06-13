@@ -142,6 +142,7 @@ async function configureBrowser(){
             
             //insertion data to database
             function noticeInsertion(){
+                noticeClear();
                 pool.query("INSERT INTO aiubnotice (noticetitle) VALUES ('"+noticeTitle+"');",(err,res) => {
                     if(err){
                         console.log("Table insertion error which is: "+err);
@@ -163,8 +164,6 @@ async function configureBrowser(){
                     console.log(noticeDesc);
                     console.log("See full post: "+postURL);
                     watchTime();
-
-                    noticeClear();
                     
                     noticeInsertion();
 
@@ -185,11 +184,14 @@ async function configureBrowser(){
                 else{
                     console.log('Table selecting successfully.');
 
-                    lastNoticeTitle = Object.values(res.rows[0]).toString();
+                    //To see the rows in database
+                    //console.log(res.rows);
 
+                    lastNoticeTitle = res.rows[0].noticetitle;
                     console.log('got notice data from database : '+lastNoticeTitle);
                     
-                    centralProcessing(lastNoticeTitle);              
+                    centralProcessing(lastNoticeTitle);
+                                
                 }
             });
 
@@ -219,7 +221,7 @@ async function configureBrowser(){
 async function tracking(){
     try{
         let track = new CronJob('0 * * * *', function(){
-            console.log('App monitor is running....');
+            console.log('===================<App Started>===================');
             configureBrowser();
             countCronjobHour++;
             console.log('Total Hour Monitored: '+countCronjobHour);
