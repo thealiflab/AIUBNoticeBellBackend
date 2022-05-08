@@ -1,2 +1,2 @@
-# ANS Web App
+# AIUB Notice Bell Backend module
 
