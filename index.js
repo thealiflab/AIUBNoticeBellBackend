@@ -97,14 +97,14 @@ async function configureBrowser(){
                 port: 465,
                 secure: true, 
                 auth: {
-                  user: 'imhero48@gmail.com',
-                  pass: 'asdf_54321A'
+                  user: process.env.USERNAME,
+                  pass: process.env.PASSWORD
                 }
               }));
 
             var mailOptions = {
-                from: 'AIUB Notice Bell <imhero48@gmail.com>',
-                to: 'geekalif@gmail.com',
+                from: `AIUB Notice Bell <${process.env.USERNAME}>`,
+                to: process.env.SEND_MAIL,
                 subject: 'New Notice',
                 text: `${noticeTitle}`,
                 html: `<b>${noticeTitle}</b><br><br>Notice Date: ${day} ${month},${year}<br><br>See full notice: ${postURL}<br><br><img src="cid:ahmedalif.com"/>`,
